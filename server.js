@@ -99,7 +99,7 @@ app.put("/reserve", async (req, res) => {
     TableName: tableName,
     Key: { id: item.id },
     UpdateExpression:
-      "set userId=:userId, roomId=:roomId, equipmentsId=:equipmentsId, reserveFrom=:reserveFrom, reserveTo=:reserveTo, timestamp=:timestamp, status=:status",
+      "set userId=:userId, roomId=:roomId, equipmentsId=:equipmentsId, reserveFrom=:reserveFrom, reserveTo=:reserveTo, #ts=:timestamp, status=:status",
     ExpressionAttributeValues: {
       ":userId": item.userId,
       ":roomId": item.roomId,
@@ -108,6 +108,9 @@ app.put("/reserve", async (req, res) => {
       ":reserveTo": item.reserveTo,
       ":timestamp": item.timestamp,
       ":status": item.status,
+    },
+    ExpressionAttributeNames: {
+      "#ts": "timestamp",
     },
     ReturnValues: "UPDATED_NEW",
   };
