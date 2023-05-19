@@ -92,8 +92,6 @@ app.post("/reserve", async (req, res) => {
 
 app.put("/reserve", async (req, res) => {
   const item = req.body;
-  item.id = item._id;
-  delete item._id;
 
   const params = {
     TableName: tableName,
