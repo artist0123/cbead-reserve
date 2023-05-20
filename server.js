@@ -1,6 +1,8 @@
 const express = require("express");
 const AWS = require("aws-sdk");
 const bodyParser = require("body-parser");
+const { v4: uuidv4 } = require("uuid");
+const cors = require("cors")
 
 AWS.config.update({
   accessKeyId: process.env.AWS_ACCESS_KEY_ID,
@@ -12,6 +14,7 @@ const dynamoDB = new AWS.DynamoDB.DocumentClient();
 
 const app = express();
 app.use(bodyParser.json());
+app.use(cors())
 
 const tableName = "reserve";
 
@@ -79,7 +82,10 @@ app.post("/reserve", async (req, res) => {
 
   const params = {
     TableName: "reserve",
-    Item: item,
+    Item: {
+      id : uuidv4(),
+      ...item
+    },
   };
 
   try {
