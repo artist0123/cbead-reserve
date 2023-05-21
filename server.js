@@ -1,6 +1,8 @@
 const express = require("express");
 const AWS = require("aws-sdk");
 const bodyParser = require("body-parser");
+const { v4: uuidv4 } = require("uuid");
+const cors = require("cors")
 
 AWS.config.update({
   accessKeyId: process.env.AWS_ACCESS_KEY_ID,
@@ -12,6 +14,7 @@ const dynamoDB = new AWS.DynamoDB.DocumentClient();
 
 const app = express();
 app.use(bodyParser.json());
+app.use(cors())
 
 const tableName = "reserve";
 
@@ -74,17 +77,22 @@ app.get("/reserveById/:id", async (req, res) => {
 
 app.post("/reserve", async (req, res) => {
   const item = req.body;
-  item.id = item._id;
-  delete item._id;
-
+  const reserveId = uuidv4()
+  // item.id = item._id;
+  // delete item._id;
+  console.log(reserveId);
   const params = {
     TableName: "reserve",
-    Item: item,
+    Item: {
+      id : reserveId,
+      ...item
+    },
   };
 
   try {
     await dynamoDB.put(params).promise();
-    res.status(200).send(item.id);
+    console.log(reserveId);
+    res.status(200).send({id : reserveId});
   } catch (error) {
     res.status(500).send(error.message);
   }
@@ -109,7 +117,7 @@ app.put("/reserve", async (req, res) => {
     },
     ExpressionAttributeNames: {
       "#ts": "timestamp",
-      "#st": "status"
+      "#st" : "status"
     },
     ReturnValues: "UPDATED_NEW",
   };
@@ -139,4 +147,4 @@ app.delete("/reserve/:id", async (req, res) => {
 });
 
 const port = process.env.PORT || 3000;
-app.listen(port, () => console.log(`Server is running on port ${port}`));
+app.listen(3000, () => console.log(`Server is running on port ${port}`));
