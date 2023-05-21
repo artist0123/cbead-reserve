@@ -28,8 +28,8 @@ app.get("/reserves", async (req, res) => {
   }
 });
 
-app.get("/userReserves", async (req, res) => {
-  const userId = req.query.userId;
+app.get("/userReserves/:userId", async (req, res) => {
+  const userId = req.params.userId;
 
   const params = {
     TableName: tableName, // Replace with your actual DynamoDB table name
@@ -50,8 +50,8 @@ app.get("/userReserves", async (req, res) => {
   }
 });
 
-app.get("/reserveById", async (req, res) => {
-  const id = req.query.id;
+app.get("/reserveById/:id", async (req, res) => {
+  const id = req.params.id;
 
   const params = {
     TableName: tableName, // Replace with your actual DynamoDB table name
@@ -97,7 +97,7 @@ app.put("/reserve", async (req, res) => {
     TableName: tableName,
     Key: { id: item.id },
     UpdateExpression:
-      "set userId=:userId, roomId=:roomId, equipmentsId=:equipmentsId, reserveFrom=:reserveFrom, reserveTo=:reserveTo, #ts=:timestamp, status=:status",
+      "set userId=:userId, roomId=:roomId, equipmentsId=:equipmentsId, reserveFrom=:reserveFrom, reserveTo=:reserveTo, #ts=:timestamp, #st=:status",
     ExpressionAttributeValues: {
       ":userId": item.userId,
       ":roomId": item.roomId,
@@ -109,6 +109,7 @@ app.put("/reserve", async (req, res) => {
     },
     ExpressionAttributeNames: {
       "#ts": "timestamp",
+      "#st": "status"
     },
     ReturnValues: "UPDATED_NEW",
   };
