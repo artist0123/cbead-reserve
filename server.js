@@ -77,20 +77,22 @@ app.get("/reserveById/:id", async (req, res) => {
 
 app.post("/reserve", async (req, res) => {
   const item = req.body;
+  const reserveId = uuidv4()
   // item.id = item._id;
   // delete item._id;
-
+  console.log(reserveId);
   const params = {
     TableName: "reserve",
     Item: {
-      id : uuidv4(),
+      id : reserveId,
       ...item
     },
   };
 
   try {
     await dynamoDB.put(params).promise();
-    res.status(200).send(item.id);
+    console.log(reserveId);
+    res.status(200).send({id : reserveId});
   } catch (error) {
     res.status(500).send(error.message);
   }
@@ -145,4 +147,4 @@ app.delete("/reserve/:id", async (req, res) => {
 });
 
 const port = process.env.PORT || 3000;
-app.listen(port, () => console.log(`Server is running on port ${port}`));
+app.listen(3000, () => console.log(`Server is running on port ${port}`));
